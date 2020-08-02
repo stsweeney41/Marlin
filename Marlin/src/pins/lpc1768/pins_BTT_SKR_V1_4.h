@@ -219,6 +219,15 @@
   #define TMC_BAUD_RATE 19200
 #endif
 
+// *START I2C EEPROM
+
+#define I2C_EEPROM
+#ifdef E2END
+   #undef E2END
+#endif
+#define E2END 0x7FFF // EEPROM end address AT24C256 (32kB)
+//#define E2END 0xFFFF // EEPROM end address AT24C512 (64kB)
+
 //
 // SD Connection
 //

@@ -25,6 +25,13 @@
   #define BOARD_INFO_NAME "BTT SKR V1.4"
 #endif
 
+// *START I2C EEPROM
+
+#define MNV_SKRV1_4_256K_END 0x7FFF //32Kb
+//#define MNV_SKRV1_4_512K_END 0xFFFF //64Kb
+#define I2C_EEPROM
+#define E2END MNV_SKRV1_4_256K_END
+
 //
 // SD Connection
 //
@@ -211,14 +218,6 @@
   #define TMC_BAUD_RATE 19200
 #endif
 
-// *START I2C EEPROM
-
-//#define I2C_EEPROM
-//#ifdef E2END
-   //#undef E2END
-//#endif
-//#define E2END 0x7FFF // EEPROM end address AT24C256 (32kB)
-//#define E2END 0xFFFF // EEPROM end address AT24C512 (64kB)
 
 //
 // SD Connection

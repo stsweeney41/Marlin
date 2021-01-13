@@ -24,7 +24,7 @@
 #define CONFIG_EXAMPLES_DIR "Creality/CR-10 V2"
 
 /**
- * Creality CD-10 V2 options
+ * Creality CD-10 V3 options
  */
 
 // Is the BLTouch option installed?

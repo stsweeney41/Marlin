@@ -846,10 +846,10 @@
  * The probe replaces the Z-MIN endstop and is used for Z homing.
  * (Automatically enables USE_PROBE_FOR_Z_HOMING.)
  */
-#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN
+//#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN
 
 // Force the use of the probe for Z-axis homing
-//#define USE_PROBE_FOR_Z_HOMING
+#define USE_PROBE_FOR_Z_HOMING
 
 /**
  * Z_MIN_PROBE_PIN
@@ -869,7 +869,7 @@
 //#define Z_MIN_PROBE_PIN 32 // Pin 32 is the RAMPS default
 
 #if ENABLED(CR10V2_BLTOUCH)
-  #define Z_STOP_PIN  P1_22// Source DWIN2
+  #define Z_STOP_PIN  P1_22 // Source DWIN2
 #endif
 
 /**

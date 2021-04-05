@@ -103,18 +103,18 @@
   #define Z_CS_PIN                         P1_17
 #endif
 
-#define E0_STEP_PIN                        P2_06
-#define E0_DIR_PIN                         P2_07
-#define E0_ENABLE_PIN                      P0_04
+#define E0_STEP_PIN                        P2_11
+#define E0_DIR_PIN                         P2_12
+#define E0_ENABLE_PIN                      P0_21
 #ifndef E0_CS_PIN
-  #define E0_CS_PIN                        P0_05
+  #define E0_CS_PIN                        P0_22
 #endif
 
-#define E1_STEP_PIN                        P2_11
-#define E1_DIR_PIN                         P2_12
-#define E1_ENABLE_PIN                      P0_21
+#define E1_STEP_PIN                        P2_06
+#define E1_DIR_PIN                         P2_07
+#define E1_ENABLE_PIN                      P0_04
 #ifndef E1_CS_PIN
-  #define E1_CS_PIN                        P0_22
+  #define E1_CS_PIN                        P0_05
 #endif
 
 #if HAS_TMC_UART

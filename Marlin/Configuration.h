@@ -868,9 +868,9 @@
  */
 //#define Z_MIN_PROBE_PIN 32 // Pin 32 is the RAMPS default
 
-#if ENABLED(CR10V2_BLTOUCH)
-  #define Z_STOP_PIN  P1_22// Source DWIN2
-#endif
+//#if ENABLED(CR10V2_BLTOUCH)
+  //#define Z_STOP_PIN  P1_22// Source DWIN2
+//#endif
 
 /**
  * Probe Type

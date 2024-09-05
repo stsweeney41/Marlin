@@ -39,8 +39,18 @@
 
 #define _IMPLEMENT_SERIAL(X) DefaultSerial##X MSerial##X(false, Serial##X)
 #define IMPLEMENT_SERIAL(X)  _IMPLEMENT_SERIAL(X)
-#if WITHIN(SERIAL_PORT, 0, 3)
+#if WITHIN(SERIAL_PORT, 0, 8)
   IMPLEMENT_SERIAL(SERIAL_PORT);
+#endif
+#ifdef SERIAL_PORT_2
+  #if WITHIN(SERIAL_PORT_2, 0, 8)
+    IMPLEMENT_SERIAL(SERIAL_PORT_2);
+  #endif
+#endif
+#ifdef SERIAL_PORT_3
+  #if WITHIN(SERIAL_PORT_3, 0, 8)
+    IMPLEMENT_SERIAL(SERIAL_PORT_3);
+  #endif
 #endif
 USBSerialType USBSerial(false, SerialUSB);
 
@@ -77,6 +87,31 @@ void MarlinHAL::clear_reset_source() {
   uint32_t reset_source = SRC_SRSR;
   SRC_SRSR = reset_source;
 }
+
+// ------------------------
+// Watchdog Timer
+// ------------------------
+
+#if ENABLED(USE_WATCHDOG)
+
+  #define WDT_TIMEOUT TERN(WATCHDOG_DURATION_8S, 8, 4) // 4 or 8 second timeout
+
+  constexpr uint8_t timeoutval = (WDT_TIMEOUT - 0.5f) / 0.5f;
+
+  void MarlinHAL::watchdog_init() {
+    CCM_CCGR3 |= CCM_CCGR3_WDOG1(3);  // enable WDOG1 clocks
+    WDOG1_WMCR = 0;                   // disable power down PDE
+    WDOG1_WCR |= WDOG_WCR_SRS | WDOG_WCR_WT(timeoutval);
+    WDOG1_WCR |= WDOG_WCR_WDE | WDOG_WCR_WDT | WDOG_WCR_SRE;
+  }
+
+  void MarlinHAL::watchdog_refresh() {
+    // Watchdog refresh sequence
+    WDOG1_WSR = 0x5555;
+    WDOG1_WSR = 0xAAAA;
+  }
+
+#endif
 
 // ------------------------
 // ADC

@@ -23,6 +23,7 @@
 
 #include "../../inc/MarlinConfig.h"
 #include "HAL.h"
+#include <avr/wdt.h>
 
 #ifdef USBCON
   DefaultSerial1 MSerial0(false, Serial);
@@ -62,18 +63,23 @@ void save_reset_reason() {
 
 void MarlinHAL::init() {
   // Init Servo Pins
-  #define INIT_SERVO(N) OUT_WRITE(SERVO##N##_PIN, LOW)
   #if HAS_SERVO_0
-    INIT_SERVO(0);
+    OUT_WRITE(SERVO0_PIN, LOW);
   #endif
   #if HAS_SERVO_1
-    INIT_SERVO(1);
+    OUT_WRITE(SERVO1_PIN, LOW);
   #endif
   #if HAS_SERVO_2
-    INIT_SERVO(2);
+    OUT_WRITE(SERVO2_PIN, LOW);
   #endif
   #if HAS_SERVO_3
-    INIT_SERVO(3);
+    OUT_WRITE(SERVO3_PIN, LOW);
+  #endif
+  #if HAS_SERVO_4
+    OUT_WRITE(SERVO4_PIN, LOW);
+  #endif
+  #if HAS_SERVO_5
+    OUT_WRITE(SERVO5_PIN, LOW);
   #endif
 
   init_pwm_timers();   // Init user timers to default frequency - 1000HZ
@@ -89,15 +95,67 @@ void MarlinHAL::reboot() {
 }
 
 // ------------------------
+// Watchdog Timer
+// ------------------------
+
+#if ENABLED(USE_WATCHDOG)
+
+  #include <avr/wdt.h>
+  #include "../../MarlinCore.h"
+
+  // Initialize watchdog with 8s timeout, if possible. Otherwise, make it 4s.
+  void MarlinHAL::watchdog_init() {
+    #if ENABLED(WATCHDOG_DURATION_8S) && defined(WDTO_8S)
+      #define WDTO_NS WDTO_8S
+    #else
+      #define WDTO_NS WDTO_4S
+    #endif
+    #if ENABLED(WATCHDOG_RESET_MANUAL)
+      // Enable the watchdog timer, but only for the interrupt.
+      // Take care, as this requires the correct order of operation, with interrupts disabled.
+      // See the datasheet of any AVR chip for details.
+      wdt_reset();
+      cli();
+      _WD_CONTROL_REG = _BV(_WD_CHANGE_BIT) | _BV(WDE);
+      _WD_CONTROL_REG = _BV(WDIE) | (WDTO_NS & 0x07) | ((WDTO_NS & 0x08) << 2); // WDTO_NS directly does not work. bit 0-2 are consecutive in the register but the highest value bit is at bit 5
+                                                                                // So worked for up to WDTO_2S
+      sei();
+      wdt_reset();
+    #else
+      wdt_enable(WDTO_NS); // The function handles the upper bit correct.
+    #endif
+    //delay(10000); // test it!
+  }
+
+  //===========================================================================
+  //=================================== ISR ===================================
+  //===========================================================================
+
+  // Watchdog timer interrupt, called if main program blocks >4sec and manual reset is enabled.
+  #if ENABLED(WATCHDOG_RESET_MANUAL)
+    ISR(WDT_vect) {
+      sei();  // With the interrupt driven serial we need to allow interrupts.
+      SERIAL_ERROR_MSG(STR_WATCHDOG_FIRED);
+      minkill();  // interrupt-safe final kill and infinite loop
+    }
+  #endif
+
+  // Reset watchdog. MUST be called at least every 4 seconds after the
+  // first watchdog_init or AVR will go into emergency procedures.
+  void MarlinHAL::watchdog_refresh() { wdt_reset(); }
+
+#endif // USE_WATCHDOG
+
+// ------------------------
 // Free Memory Accessor
 // ------------------------
 
-#if ENABLED(SDSUPPORT)
+#if HAS_MEDIA
 
   #include "../../sd/SdFatUtil.h"
   int freeMemory() { return SdFatUtil::FreeRam(); }
 
-#else // !SDSUPPORT
+#else // !HAS_MEDIA
 
   extern "C" {
     extern char __bss_end;
@@ -114,6 +172,6 @@ void MarlinHAL::reboot() {
     }
   }
 
-#endif // !SDSUPPORT
+#endif // !HAS_MEDIA
 
 #endif // __AVR__

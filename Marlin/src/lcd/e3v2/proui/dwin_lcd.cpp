@@ -126,9 +126,9 @@ void DWIN_WriteToMem(uint8_t mem, uint16_t addr, uint16_t length, uint8_t *data)
     DWIN_Byte(i, mem);
     DWIN_Word(i, addr + indx); // start address of the data block
     ++i;
-    LOOP_L_N(j, i) { LCD_SERIAL.write(DWIN_SendBuf[j]); delayMicroseconds(1); }  // Buf header
+    for (uint8_t j = 0; j < i; ++j) { LCD_SERIAL.write(DWIN_SendBuf[j]); delayMicroseconds(1); }  // Buf header
     for (uint16_t j = indx; j <= indx + to_send - 1; j++) LCD_SERIAL.write(*(data + j)); delayMicroseconds(1);  // write block of data
-    LOOP_L_N(j, 4) { LCD_SERIAL.write(DWIN_BufTail[j]); delayMicroseconds(1); }
+    for (uint8_t j = 0; j < 4; ++j) { LCD_SERIAL.write(DWIN_BufTail[j]); delayMicroseconds(1); }
     block++;
     pending -= to_send;
   }
@@ -147,7 +147,7 @@ void DWIN_SRAMToPic(uint8_t picID) {
 
 //--------------------------Test area -------------------------
 
-//void DWIN_ReadSRAM(uint16_t addr, uint8_t length, const char * const data) {
+//void DWIN_ReadSRAM(uint16_t addr, const uint8_t length, const char * const data) {
 //  size_t i = 0;
 //  DWIN_Byte(i, 0x32);
 //  DWIN_Byte(i, 0x5A);  // 0x5A Read from SRAM - 0xA5 Read from Flash

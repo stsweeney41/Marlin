@@ -227,7 +227,7 @@ void DGUSDisplay::ProcessRx() {
   }
 }
 
-size_t DGUSDisplay::GetFreeTxBuffer() { return SERIAL_GET_TX_BUFFER_FREE(); }
+size_t DGUSDisplay::GetFreeTxBuffer() { return LCD_SERIAL_TX_BUFFER_FREE(); }
 
 void DGUSDisplay::WriteHeader(uint16_t adr, uint8_t cmd, uint8_t payloadlen) {
   LCD_SERIAL.write(DGUS_HEADER1);
@@ -243,7 +243,7 @@ void DGUSDisplay::WritePGM(const char str[], uint8_t len) {
 }
 
 void DGUSDisplay::loop() {
-  // protect against recursion… ProcessRx() may indirectly call idle() when injecting gcode commands.
+  // Protect against recursion. ProcessRx() may indirectly call idle() when injecting G-code commands.
   if (!no_reentrance) {
     no_reentrance = true;
     ProcessRx();

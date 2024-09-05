@@ -35,7 +35,7 @@
 
 // Onboard I2C EEPROM
 #define I2C_EEPROM
-#define MARLIN_EEPROM_SIZE                0x1000  // 4KB (AT24C32)
+#define MARLIN_EEPROM_SIZE                0x1000  // 4K (AT24C32)
 
 //
 // Servos
@@ -55,7 +55,7 @@
 // Limit Switches
 #define X_STOP_PIN                    X_DIAG_PIN
 #define Y_STOP_PIN                    Y_DIAG_PIN
-#define Z_STOP_PIN                    Z_DIAG_PIN
+#define Z_STOP_PIN                    P1_22
 
 //
 // Z Probe
@@ -203,7 +203,7 @@
 #define EXP1_09_PIN                        P0_16
 #define EXP1_10_PIN                        P2_08
 
-#if EITHER(HAS_DWIN_E3V2, IS_DWIN_MARLINUI)
+#if HAS_DWIN_E3V2 || IS_DWIN_MARLINUI
   #error "Ender-3 V2 display requires a custom cable with TX = P0_15, RX = P0_16. Comment out this line to continue."
 
  /**

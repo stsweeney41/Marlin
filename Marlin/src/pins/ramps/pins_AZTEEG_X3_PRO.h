@@ -23,13 +23,16 @@
 
 /**
  * AZTEEG_X3_PRO (Arduino Mega) pin assignments
+ * Schematic: https://green-candy.osdn.jp/external/MarlinFW/board_schematics/AZTEEG_X3_PRO/AZTEEG%20X3%20PRO%201.0%20PUB.pdf
+ * Origin: http://files.panucatt.com/datasheets/x3pro_sch_v1.0.zip
+ * ATmega2560
  */
 
 #define REQUIRE_MEGA2560
 #include "env_validate.h"
 
 #if HOTENDS > 5 || E_STEPPERS > 5
-  #error "Azteeg X3 Pro supports up to 5 hotends / E-steppers. Comment out this line to continue."
+  #error "Azteeg X3 Pro supports up to 5 hotends / E steppers."
 #endif
 
 #define BOARD_INFO_NAME "Azteeg X3 Pro"
@@ -53,8 +56,8 @@
 #define Y_STOP_PIN                            14
 #define Z_STOP_PIN                            18
 
-#ifndef FAN_PIN
-  #define FAN_PIN                              6
+#ifndef FAN0_PIN
+  #define FAN0_PIN                             6
 #endif
 
 #if ENABLED(CASE_LIGHT_ENABLE) && !PIN_EXISTS(CASE_LIGHT)

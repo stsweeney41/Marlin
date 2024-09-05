@@ -33,7 +33,7 @@
 #include "env_validate.h"
 
 #if HAS_MULTI_HOTEND || E_STEPPERS > 1
-  #error "JGAurora A5S A1 only supports one hotend / E-stepper. Comment out this line to continue."
+  #error "JGAurora A5S A1 only supports 1 hotend / E stepper."
 #endif
 
 #define BOARD_INFO_NAME "JGAurora A5S A1"
@@ -104,7 +104,7 @@
 #define HEATER_0_PIN                        PA2
 #define HEATER_BED_PIN                      PA3
 
-#define FAN_PIN                             PA1
+#define FAN0_PIN                            PA1
 
 #define FIL_RUNOUT_PIN                      PC7
 

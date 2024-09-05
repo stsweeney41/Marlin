@@ -29,9 +29,7 @@
 
 #include "../../../inc/MarlinConfigPre.h"
 
-#if BOTH(DWIN_LCD_PROUI, HAS_MESH)
-
-#include "meshviewer.h"
+#if ALL(DWIN_LCD_PROUI, HAS_MESH)
 
 #include "../../../core/types.h"
 #include "../../marlinui.h"
@@ -40,9 +38,10 @@
 #include "dwin.h"
 #include "dwin_popup.h"
 #include "../../../feature/bedlevel/bedlevel.h"
+#include "meshviewer.h"
 
 #if ENABLED(AUTO_BED_LEVELING_UBL)
-  #include "ubl_tools.h"
+  #include "bedlevel_tools.h"
 #endif
 
 MeshViewerClass MeshViewer;
@@ -61,7 +60,7 @@ void MeshViewerClass::DrawMesh(bed_mesh_t zval, const uint8_t sizex, const uint8
   #define DrawMeshHLine(yp) DWIN_Draw_HLine(HMI_data.SplitLine_Color, px(0), py(yp), DWIN_WIDTH - 2 * mx)
   #define DrawMeshVLine(xp) DWIN_Draw_VLine(HMI_data.SplitLine_Color, px(xp), py(sizey - 1), DWIN_WIDTH - 2 * my)
   int16_t maxz =-32000; int16_t minz = 32000;
-  LOOP_L_N(y, sizey) LOOP_L_N(x, sizex) {
+  for (uint8_t y = 0; y < sizey; ++y) for (uint8_t x = 0; x < sizex; ++x) {
     const float v = isnan(zval[x][y]) ? 0 : round(zval[x][y] * 100);
     zmesh[x][y] = v;
     NOLESS(maxz, v);
@@ -71,11 +70,11 @@ void MeshViewerClass::DrawMesh(bed_mesh_t zval, const uint8_t sizex, const uint8
   min = (float)minz / 100;
   DWINUI::ClearMainArea();
   DWIN_Draw_Rectangle(0, HMI_data.SplitLine_Color, px(0), py(0), px(sizex - 1), py(sizey - 1));
-  LOOP_S_L_N(x, 1, sizex - 1) DrawMeshVLine(x);
-  LOOP_S_L_N(y, 1, sizey - 1) DrawMeshHLine(y);
-  LOOP_L_N(y, sizey) {
-    watchdog_refresh();
-    LOOP_L_N(x, sizex) {
+  for (uint8_t x = 1; x < sizex - 1; ++x) DrawMeshVLine(x);
+  for (uint8_t y = 1; y < sizey - 1; ++y) DrawMeshHLine(y);
+  for (uint8_t y = 0; y < sizey; ++y) {
+    hal.watchdog_refresh();
+    for (uint8_t x = 0; x < sizex; ++x) {
       uint16_t color = DWINUI::RainbowInt(zmesh[x][y], _MIN(-5, minz), _MAX(5, maxz));
       uint8_t radius = rm(zmesh[x][y]);
       DWINUI::Draw_FillCircle(color, px(x), py(y), radius);
@@ -112,10 +111,10 @@ void MeshViewerClass::DrawMesh(bed_mesh_t zval, const uint8_t sizex, const uint8
 
 void MeshViewerClass::Draw(bool withsave /*= false*/) {
   Title.ShowCaption(GET_TEXT_F(MSG_MESH_VIEWER));
-  #if ENABLED(USE_UBL_VIEWER)
+  #if USE_UBL_VIEWER
     DWINUI::ClearMainArea();
-    ubl_tools.viewer_print_value = true;
-    ubl_tools.Draw_Bed_Mesh(-1, 1, 8, 10 + TITLE_HEIGHT);
+    bedLevelTools.viewer_print_value = true;
+    bedLevelTools.Draw_Bed_Mesh(-1, 1, 8, 10 + TITLE_HEIGHT);
   #else
     DrawMesh(bedlevel.z_values, GRID_MAX_POINTS_X, GRID_MAX_POINTS_Y);
   #endif
@@ -127,8 +126,8 @@ void MeshViewerClass::Draw(bool withsave /*= false*/) {
   else
     DWINUI::Draw_Button(BTN_Continue, 86, 305);
 
-  #if ENABLED(USE_UBL_VIEWER)
-    ubl_tools.Set_Mesh_Viewer_Status();
+  #if USE_UBL_VIEWER
+    bedLevelTools.Set_Mesh_Viewer_Status();
   #else
     char str_1[6], str_2[6] = "";
     ui.status_printf(0, F("Mesh minZ: %s, maxZ: %s"),

@@ -34,7 +34,6 @@ FWRetract fwretract; // Single instance - this calls the constructor
 
 #include "../module/motion.h"
 #include "../module/planner.h"
-#include "../module/stepper.h"
 
 #include "../gcode/gcode.h"
 
@@ -196,8 +195,6 @@ void FWRetract::retract(const bool retracting E_OPTARG(bool swapping/*=false*/))
   //*/
 }
 
-//extern const char SP_Z_STR[];
-
 /**
  * M207: Set firmware retraction values
  *
@@ -265,6 +262,5 @@ void FWRetract::M208_report() {
   }
 
 #endif // FWRETRACT_AUTORETRACT
-
 
 #endif // FWRETRACT

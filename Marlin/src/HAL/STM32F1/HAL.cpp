@@ -1,10 +1,9 @@
 /**
  * Marlin 3D Printer Firmware
- *
  * Copyright (c) 2020 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
- * Copyright (c) 2016 Bob Cousins bobcousins42@googlemail.com
- * Copyright (c) 2015-2016 Nico Tonnhofer wurstnase.reprap@gmail.com
- * Copyright (c) 2017 Victor Perez
+ *
+ * Based on Sprinter and grbl.
+ * Copyright (c) 2011 Camiel Gubbels / Erik van der Zalm
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -114,6 +113,47 @@
 #endif
 
 // ------------------------
+// Watchdog Timer
+// ------------------------
+
+#if ENABLED(USE_WATCHDOG)
+
+  #include <libmaple/iwdg.h>
+
+  void watchdogSetup() {
+    // do whatever. don't remove this function.
+  }
+
+  /**
+   *  The watchdog clock is 40Khz. So for a 4s or 8s interval use a /256 preescaler and 625 or 1250 reload value (counts down to 0).
+   */
+  #define STM32F1_WD_RELOAD TERN(WATCHDOG_DURATION_8S, 1250, 625) // 4 or 8 second timeout
+
+  /**
+   * @brief  Initialize the independent hardware watchdog.
+   *
+   * @return No return
+   *
+   * @details The watchdog clock is 40Khz. So for a 4s or 8s interval use a /256 preescaler and 625 or 1250 reload value (counts down to 0).
+   */
+  void MarlinHAL::watchdog_init() {
+    #if DISABLED(DISABLE_WATCHDOG_INIT)
+      iwdg_init(IWDG_PRE_256, STM32F1_WD_RELOAD);
+    #endif
+  }
+
+  // Reset watchdog. MUST be called every 4 or 8 seconds after the
+  // first watchdog_init or the STM32F1 will reset.
+  void MarlinHAL::watchdog_refresh() {
+    #if DISABLED(PINS_DEBUGGING) && PIN_EXISTS(LED)
+      TOGGLE(LED_PIN);  // heartbeat indicator
+    #endif
+    iwdg_feed();
+  }
+
+#endif // USE_WATCHDOG
+
+// ------------------------
 // ADC
 // ------------------------
 
@@ -183,7 +223,7 @@ void MarlinHAL::init() {
   #endif
   #if HAS_SD_HOST_DRIVE
     MSC_SD_init();
-  #elif BOTH(SERIAL_USB, EMERGENCY_PARSER)
+  #elif ALL(SERIAL_USB, EMERGENCY_PARSER)
     usb_cdcacm_set_hooks(USB_CDCACM_HOOK_RX, my_rx_callback);
   #endif
   #if PIN_EXISTS(USB_CONNECT)

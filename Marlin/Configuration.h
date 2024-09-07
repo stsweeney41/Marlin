@@ -694,9 +694,9 @@
     #define DEFAULT_Ki_LIST {   1.59,   1.59 }
     #define DEFAULT_Kd_LIST {  59.40,  59.40 }
   #else
-    #define DEFAULT_Kp  19.47
-    #define DEFAULT_Ki   1.59
-    #define DEFAULT_Kd  59.40
+    #define DEFAULT_Kp  12.27
+    #define DEFAULT_Ki   0.77
+    #define DEFAULT_Kd  49.02
   #endif
 #else
   #define BANG_MAX 255    // Limit hotend current while in bang-bang mode; 255=full current
@@ -1208,18 +1208,18 @@
  *                                      X, Y, Z [, I [, J [, K]]], E0 [, E1[, E2...]]
  * Updated E Steps to 382.14 for CR-10 V3 Direct Drive
  */
-#define DEFAULT_AXIS_STEPS_PER_UNIT   { 80.00, 80.00, 400.00, 973.85 }
+#define DEFAULT_AXIS_STEPS_PER_UNIT   { 80.00, 80.00, 400.00, 925.79 }
 
 /**
  * Default Max Feed Rate (linear=mm/s, rotational=°/s)
  * Override with M203
  *                                      X, Y, Z [, I [, J [, K...]]], E0 [, E1[, E2...]]
  */
-#define DEFAULT_MAX_FEEDRATE          { 200, 200, 20, 25 }
+#define DEFAULT_MAX_FEEDRATE          { 200, 200, 30, 25 }
 
 #define LIMITED_MAX_FR_EDITING        // Limit edit via M203 or LCD to DEFAULT_MAX_FEEDRATE * 2
 #if ENABLED(LIMITED_MAX_FR_EDITING)
-  #define MAX_FEEDRATE_EDIT_VALUES    { 200, 200, 14, 25 } // ...or, set your own edit limits
+  #define MAX_FEEDRATE_EDIT_VALUES    { 200, 200, 30, 25 } // ...or, set your own edit limits
 #endif
 
 /**
